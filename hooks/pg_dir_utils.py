@@ -159,7 +159,30 @@ def restart_map():
     return {cfg: rscs['services'] for cfg, rscs in resource_map().iteritems()}
 
 
-def restart_pg():
+def start_gateway():
+    '''
+    Brings up PE-gateway interface
+    '''
+    count = 0
+    while (count < 7):
+        cmd = 'ps aux | grep launch_metadata_helper'
+        output = subprocess.check_output([cmd], shell=True)
+        roots = 0
+        v = shlex.split(output)
+        for i in v:
+            if i == 'root':
+                roots += 1
+        if roots < 3:
+            stop_pg()
+            time.sleep(3)
+            service_start('plumgrid')
+        else:
+            break
+        count += 1
+        time.sleep(17)
+
+
+def restart_pg(gateway=None):
     '''
     Stops and Starts PLUMgrid service after flushing iptables.
     '''
@@ -177,6 +200,8 @@ def restart_pg():
                     raise ValueError("plumgrid service couldn't be started")
             else:
                 raise ValueError("libvirt-bin service couldn't be started")
+    if gateway:
+        start_gateway()
     status_set('active', 'Unit is ready')
 
 

@@ -151,7 +151,7 @@ def config_changed():
     ensure_mtu()
     CONFIGS.write_all()
     if not service_running('plumgrid'):
-        restart_pg()
+        restart_pg('lxc')
 
 
 @hooks.hook('start')
