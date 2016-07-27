@@ -74,6 +74,7 @@ def dir_joined():
     if director_cluster_ready():
         ensure_mtu()
         CONFIGS.write_all()
+    restart_pg('lxc')
 
 
 @hooks.hook('plumgrid-relation-joined')
@@ -179,6 +180,7 @@ def upgrade_charm():
     '''
     ensure_mtu()
     CONFIGS.write_all()
+    restart_pg('lxc')
 
 
 @hooks.hook('stop')

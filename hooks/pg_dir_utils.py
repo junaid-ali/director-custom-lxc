@@ -7,6 +7,7 @@ import subprocess
 import time
 import os
 import json
+import shlex
 from collections import OrderedDict
 from socket import gethostname as get_unit_hostname
 from copy import deepcopy
