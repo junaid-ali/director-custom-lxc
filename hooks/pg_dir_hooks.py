@@ -162,11 +162,12 @@ def start():
     '''
     This hook is run when the charm is started.
     '''
+    restart_pg('lxc')
+    time.sleep(15)
     if config('plumgrid-license-key') is not None:
         count = 0
         while (count < 15):
             if post_pg_license():
-                restart_pg('lxc')
                 break
             count += 1
             time.sleep(15)
