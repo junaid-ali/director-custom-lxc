@@ -28,6 +28,7 @@ from charmhelpers.contrib.network.ip import (
 )
 from charmhelpers.core.host import (
     service_start,
+    service_restart,
     service_stop,
     service_running,
     path_hash,
@@ -313,6 +314,36 @@ def ensure_mtu():
         for interface in attached_interfaces:
             set_nic_mtu(interface, interface_mtu)
     set_nic_mtu(fabric_interface, interface_mtu)
+
+
+def disable_apparmor_libvirt():
+    '''
+    Disables Apparmor profile of libvirtd.
+    '''
+    apt_install('apparmor-utils')
+    apt_install('cgroup-bin')
+    _exec_cmd(['sudo', 'aa-disable', '/usr/sbin/libvirtd'],
+              error_msg='Error disabling AppArmor profile of libvirtd')
+    disable_apparmor()
+    service_restart('libvirt-bin')
+
+
+def disable_apparmor():
+    '''
+    Disables Apparmor security for lxc.
+    '''
+    try:
+        f = open(LXC_CONF, 'r')
+    except IOError:
+        log('Libvirt not installed yet')
+        return 0
+    filedata = f.read()
+    f.close()
+    newdata = filedata.replace("security_driver = \"apparmor\"",
+                               "#security_driver = \"apparmor\"")
+    f = open(LXC_CONF, 'w')
+    f.write(newdata)
+    f.close()
 
 
 def _exec_cmd(cmd=None, error_msg='Command exited with ERRORs', fatal=False):

@@ -41,6 +41,7 @@ from pg_dir_utils import (
     load_iptables,
     restart_on_change,
     director_cluster_ready,
+    disable_apparmor_libvirt,
     configure_pg_sources
 )
 
@@ -62,6 +63,7 @@ def install():
         apt_install(pkg, options=['--force-yes'], fatal=True)
     load_iovisor()
     ensure_mtu()
+    disable_apparmor_libvirt()
     CONFIGS.write_all()
 
 
@@ -164,6 +166,7 @@ def start():
         count = 0
         while (count < 15):
             if post_pg_license():
+                restart_pg('lxc')
                 break
             count += 1
             time.sleep(15)
