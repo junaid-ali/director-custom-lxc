@@ -181,7 +181,7 @@ def start_gateway():
         else:
             break
         count += 1
-        time.sleep(17)
+        time.sleep(20)
 
 
 def restart_pg(gateway=None):
